@@ -92,6 +92,53 @@ class GaussianSplattingViewer {
         }
     }
     
+    handleGeometryLoaded(geometry, loadingScreen) {
+        // Ensure geometry has colors
+        if (!geometry.hasAttribute('color')) {
+            const colors = new Float32Array(geometry.attributes.position.count * 3);
+            colors.fill(1.0);
+            geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
+        }
+        
+        // Create material optimized for point clouds
+        const material = new THREE.PointsMaterial({
+            size: 0.02,
+            vertexColors: true,
+            sizeAttenuation: true,
+            transparent: false,
+            opacity: 1.0
+        });
+        
+        // Create points mesh
+        this.splatMesh = new THREE.Points(geometry, material);
+        this.scene.add(this.splatMesh);
+        
+        // Center and scale the model
+        geometry.computeBoundingBox();
+        const box = geometry.boundingBox;
+        const center = box.getCenter(new THREE.Vector3());
+        const size = box.getSize(new THREE.Vector3());
+        const maxDim = Math.max(size.x, size.y, size.z);
+        
+        // Scale to fit in view
+        const scale = 2 / maxDim;
+        this.splatMesh.scale.multiplyScalar(scale);
+        this.splatMesh.position.sub(center.multiplyScalar(scale));
+        
+        // Adjust camera to view the model
+        const distance = maxDim * 1.5;
+        this.camera.position.set(0, 0, distance);
+        this.controls.target.set(0, 0, 0);
+        this.controls.update();
+        
+        // Hide loading screen
+        if (loadingScreen) {
+            loadingScreen.style.display = 'none';
+        }
+        
+        console.log('Model loaded and centered successfully');
+    }
+    
     resetCamera() {
         if (this.splatMesh) {
             // Reset to fit the model
@@ -117,13 +164,41 @@ class GaussianSplattingViewer {
             const urlParams = new URLSearchParams(window.location.search);
             let filePath = urlParams.get('file');
             
-            // If no file specified, try common locations
+            // If no file specified, use default file
             if (!filePath) {
-                // Try root directory first
-                filePath = 'gs_VIVERSE_CampTaylor_LowRop.compressed.ply';
+                // Try multiple path strategies for maximum compatibility
+                // Strategy 1: Absolute path from current location
+                const currentPath = window.location.pathname;
+                const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
+                const absolutePath = window.location.origin + basePath + '/gs_VIVERSE_CampTaylor_LowRop.compressed.ply';
+                
+                // Strategy 2: Root-relative path (works best for GitHub Pages)
+                const rootRelativePath = '/3dgs_viewer/gs_VIVERSE_CampTaylor_LowRop.compressed.ply';
+                
+                // Strategy 3: Simple relative path
+                const relativePath = 'gs_VIVERSE_CampTaylor_LowRop.compressed.ply';
+                
+                // Use root-relative path first (most reliable for GitHub Pages)
+                filePath = rootRelativePath;
+                
+                console.log('Trying paths:', { absolutePath, rootRelativePath, relativePath });
+            } else if (!filePath.startsWith('http') && !filePath.startsWith('/')) {
+                // Make relative paths root-relative for GitHub Pages
+                if (filePath.startsWith('./') || !filePath.includes('/')) {
+                    filePath = '/3dgs_viewer/' + filePath.replace('./', '');
+                }
             }
             
             console.log('Loading 3DGS file:', filePath);
+            console.log('Base URL:', window.location.origin + window.location.pathname);
+            
+            // Update loading message
+            if (loadingScreen) {
+                const loaderText = loadingScreen.querySelector('p');
+                if (loaderText) {
+                    loaderText.textContent = 'Loading 3D Scene... This may take a moment for large files.';
+                }
+            }
             
             // Load PLY file (3DGS files are often in PLY format)
             const loader = new PLYLoader();
@@ -132,64 +207,61 @@ class GaussianSplattingViewer {
                 filePath,
                 (geometry) => {
                     console.log('PLY file loaded successfully', geometry);
-                    
-                    // Ensure geometry has colors
-                    if (!geometry.hasAttribute('color')) {
-                        // Add default white color
-                        const colors = new Float32Array(geometry.attributes.position.count * 3);
-                        colors.fill(1.0);
-                        geometry.setAttribute('color', new THREE.BufferAttribute(colors, 3));
-                    }
-                    
-                    // Create material optimized for point clouds
-                    const material = new THREE.PointsMaterial({
-                        size: 0.02,
-                        vertexColors: true,
-                        sizeAttenuation: true,
-                        transparent: false,
-                        opacity: 1.0
-                    });
-                    
-                    // Create points mesh
-                    this.splatMesh = new THREE.Points(geometry, material);
-                    this.scene.add(this.splatMesh);
-                    
-                    // Center and scale the model
-                    geometry.computeBoundingBox();
-                    const box = geometry.boundingBox;
-                    const center = box.getCenter(new THREE.Vector3());
-                    const size = box.getSize(new THREE.Vector3());
-                    const maxDim = Math.max(size.x, size.y, size.z);
-                    
-                    // Scale to fit in view
-                    const scale = 2 / maxDim;
-                    this.splatMesh.scale.multiplyScalar(scale);
-                    this.splatMesh.position.sub(center.multiplyScalar(scale));
-                    
-                    // Adjust camera to view the model
-                    const distance = maxDim * 1.5;
-                    this.camera.position.set(0, 0, distance);
-                    this.controls.target.set(0, 0, 0);
-                    this.controls.update();
-                    
-                    // Hide loading screen
-                    if (loadingScreen) {
-                        loadingScreen.style.display = 'none';
-                    }
-                    
-                    console.log('Model loaded and centered successfully');
+                    console.log('Vertices:', geometry.attributes.position.count);
+                    this.handleGeometryLoaded(geometry, loadingScreen);
                 },
                 (progress) => {
                     if (progress.lengthComputable) {
                         const percentComplete = (progress.loaded / progress.total) * 100;
                         console.log('Loading progress:', percentComplete.toFixed(2) + '%');
+                        
+                        // Update loading message with progress
+                        if (loadingScreen) {
+                            const loaderText = loadingScreen.querySelector('p');
+                            if (loaderText) {
+                                loaderText.textContent = `Loading 3D Scene... ${percentComplete.toFixed(0)}%`;
+                            }
+                        }
+                    } else {
+                        console.log('Loading...', progress.loaded, 'bytes loaded');
                     }
                 },
                 (error) => {
                     console.error('Error loading PLY file:', error);
-                    this.showError(`Failed to load 3DGS file: ${filePath}<br><br>Error: ${error.message || 'File not found or invalid format'}<br><br>Make sure the file exists and is accessible.`);
-                    if (loadingScreen) {
-                        loadingScreen.style.display = 'none';
+                    console.error('Attempted path:', filePath);
+                    console.error('Current URL:', window.location.href);
+                    
+                    // Try fallback relative path
+                    if (filePath.includes('github.io')) {
+                        console.log('Trying fallback relative path...');
+                        const fallbackPath = 'gs_VIVERSE_CampTaylor_LowRop.compressed.ply';
+                        this.showError(`Failed to load from: ${filePath}<br><br>Trying fallback path...<br><br>If this persists, check:<br>1. File exists in repository<br>2. GitHub Pages is enabled<br>3. File is accessible (not in private folder)`);
+                        
+                        // Try fallback after a moment
+                        setTimeout(() => {
+                            const loader = new PLYLoader();
+                            loader.load(
+                                fallbackPath,
+                                (geometry) => {
+                                    console.log('Fallback path succeeded!');
+                                    // Same success handling as above
+                                    this.handleGeometryLoaded(geometry, loadingScreen);
+                                },
+                                () => {},
+                                (fallbackError) => {
+                                    console.error('Fallback also failed:', fallbackError);
+                                    this.showError(`Failed to load 3DGS file.<br><br>Error: ${error.message || 'File not found'}<br><br>Tried:<br>1. ${filePath}<br>2. ${fallbackPath}<br><br>Check browser console (F12) for details.`);
+                                    if (loadingScreen) {
+                                        loadingScreen.style.display = 'none';
+                                    }
+                                }
+                            );
+                        }, 1000);
+                    } else {
+                        this.showError(`Failed to load 3DGS file: ${filePath}<br><br>Error: ${error.message || 'File not found or invalid format'}<br><br>Make sure the file exists and is accessible.`);
+                        if (loadingScreen) {
+                            loadingScreen.style.display = 'none';
+                        }
                     }
                 }
             );
