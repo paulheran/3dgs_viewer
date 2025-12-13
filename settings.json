@@ -1,8 +1,8 @@
 {
   "background": {"color": [0,0,0,0]},
   "camera": {
-    "fov": 1.0,
-    "position": [0,1,-1],
+    "fov": 80,
+    "position": [0,2,-5],
     "target": [0,0,0],
     "startAnim": "orbit"
   },
