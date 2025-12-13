@@ -166,36 +166,28 @@ class GaussianSplattingViewer {
             
             // If no file specified, use default file
             if (!filePath) {
-                // Build absolute URL for GitHub Pages
-                // This works better when embedded in X iframe
-                const origin = window.location.origin;
+                // Simple approach: use relative path from current location
+                // This works for both direct access and iframe embedding
                 const pathname = window.location.pathname;
                 
-                // Extract repo name from pathname (e.g., /3dgs_viewer/player.html -> /3dgs_viewer)
-                let repoPath = pathname;
-                if (pathname.includes('/player.html') || pathname.includes('/index.html')) {
-                    repoPath = pathname.substring(0, pathname.lastIndexOf('/'));
+                // If we're at root or index, use simple relative path
+                if (pathname === '/' || pathname === '/3dgs_viewer/' || pathname === '/3dgs_viewer/index.html') {
+                    filePath = './gs_VIVERSE_CampTaylor_LowRop.compressed.ply';
+                } 
+                // If we're in player.html, go up one level
+                else if (pathname.includes('/player.html')) {
+                    filePath = '../gs_VIVERSE_CampTaylor_LowRop.compressed.ply';
+                }
+                // Otherwise, try relative to current directory
+                else {
+                    filePath = 'gs_VIVERSE_CampTaylor_LowRop.compressed.ply';
                 }
                 
-                // Construct absolute URL
-                filePath = origin + repoPath + '/gs_VIVERSE_CampTaylor_LowRop.compressed.ply';
-                
-                // Fallback: if we can't determine path, try root-relative
-                if (!filePath || filePath === origin + '/gs_VIVERSE_CampTaylor_LowRop.compressed.ply') {
-                    filePath = '/3dgs_viewer/gs_VIVERSE_CampTaylor_LowRop.compressed.ply';
-                }
-                
-                console.log('Constructed file path:', filePath);
-                console.log('Origin:', origin, 'Pathname:', pathname, 'Repo path:', repoPath);
+                console.log('Using relative file path:', filePath);
+                console.log('Current pathname:', pathname);
             } else if (!filePath.startsWith('http') && !filePath.startsWith('/')) {
-                // Make relative paths absolute
-                const origin = window.location.origin;
-                const pathname = window.location.pathname;
-                let repoPath = pathname;
-                if (pathname.includes('/player.html') || pathname.includes('/index.html')) {
-                    repoPath = pathname.substring(0, pathname.lastIndexOf('/'));
-                }
-                filePath = origin + repoPath + '/' + filePath;
+                // Keep relative paths as-is
+                // They'll resolve relative to the current page
             }
             
             console.log('Loading 3DGS file:', filePath);
