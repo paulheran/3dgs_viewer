@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>3D Gaussian Splatting Viewer</title>
+    
+    <!-- Twitter Card / X Card Meta Tags for Embedding -->
+    <meta name="twitter:card" content="player">
+    <meta name="twitter:site" content="@paulheran">
+    <meta name="twitter:title" content="3D Gaussian Splatting Viewer">
+    <meta name="twitter:description" content="Interactive 3D Gaussian Splatting viewer - Explore 3D scenes in your browser">
+    <meta name="twitter:image" content="https://paulheran.github.io/3dgs_viewer/preview.jpg">
+    <meta name="twitter:player" content="https://paulheran.github.io/3dgs_viewer/player.html">
+    <meta name="twitter:player:width" content="1280">
+    <meta name="twitter:player:height" content="720">
+    
+    <!-- Open Graph Meta Tags -->
+    <meta property="og:type" content="video.other">
+    <meta property="og:title" content="3D Gaussian Splatting Viewer">
+    <meta property="og:description" content="Interactive 3D Gaussian Splatting viewer - Explore 3D scenes in your browser">
+    <meta property="og:image" content="https://paulheran.github.io/3dgs_viewer/preview.jpg">
+    <meta property="og:url" content="https://paulheran.github.io/3dgs_viewer/">
+    
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="loading-screen">
+        <div class="loader">
+            <div class="spinner"></div>
+            <p>Loading 3D Scene...</p>
+        </div>
+    </div>
+    
+    <div id="viewer-container">
+        <canvas id="viewer-canvas"></canvas>
+        <div id="controls">
+            <div class="control-panel">
+                <button id="reset-camera" class="control-btn">Reset View</button>
+                <button id="toggle-auto-rotate" class="control-btn">Auto Rotate</button>
+                <div class="info">
+                    <p>Drag to rotate • Scroll to zoom • Right-click to pan</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script type="importmap">
+    {
+        "imports": {
+            "three": "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js",
+            "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"
+        }
+    }
+    </script>
+    <script type="module" src="viewer.js"></script>
+</body>
+</html>
+
