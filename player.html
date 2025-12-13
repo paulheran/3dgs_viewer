@@ -3,14 +3,13 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>3DGS Player</title>
-
+  <title>3DGS Player with Blue Sky</title>
   <style>
     html, body {
       margin: 0;
       padding: 0;
       overflow: hidden;
-      background: #000;
+      background: #87CEEB; /* fallback blue */
       width: 100%;
       height: 100%;
     }
@@ -25,8 +24,10 @@ import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.m
 import { OrbitControls } from "https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/controls/OrbitControls.js";
 import { SplatLoader } from "https://cdn.jsdelivr.net/npm/@pmndrs/vanilla@latest/dist/splat-loader.js";
 
+// Scene
 const scene = new THREE.Scene();
 
+// Camera
 const camera = new THREE.PerspectiveCamera(
   60,
   window.innerWidth / window.innerHeight,
@@ -35,26 +36,39 @@ const camera = new THREE.PerspectiveCamera(
 );
 camera.position.set(0, 1.5, 3);
 
+// Renderer
 const renderer = new THREE.WebGLRenderer({ antialias: true });
 renderer.setPixelRatio(window.devicePixelRatio);
 renderer.setSize(window.innerWidth, window.innerHeight);
 document.body.appendChild(renderer.domElement);
 
+// Orbit Controls
 const controls = new OrbitControls(camera, renderer.domElement);
 controls.enableDamping = true;
 controls.target.set(0, 1, 0);
 
+// Load blue sky (single equirectangular image)
+const texLoader = new THREE.TextureLoader();
+texLoader.load('assets/sky.jpg', function(texture) {
+    const cubeRT = new THREE.WebGLCubeRenderTarget(texture.image.height);
+    cubeRT.fromEquirectangularTexture(renderer, texture);
+    scene.background = cubeRT.texture;
+});
+
+// Load your 3DGS PLY
 const loader = new SplatLoader();
 loader.load("assets/greenlake.ply", (splat) => {
   scene.add(splat);
 });
 
+// Handle resize
 window.addEventListener("resize", () => {
   camera.aspect = window.innerWidth / window.innerHeight;
   camera.updateProjectionMatrix();
   renderer.setSize(window.innerWidth, window.innerHeight);
 });
 
+// Animate
 function animate() {
   requestAnimationFrame(animate);
   controls.update();
@@ -64,4 +78,5 @@ animate();
 </script>
 </body>
 </html>
+
 
