@@ -37,7 +37,7 @@
             const skyboxUrl = url.searchParams.get('skybox');
             const settingsUrl = url.searchParams.has('settings') ? url.searchParams.get('settings') : './settings.json';
             // Default to .sog file if available, fallback to .ply
-            const contentUrl = url.searchParams.has('content') ? url.searchParams.get('content') : './scene.sog';
+            const contentUrl = url.searchParams.has('content') ? url.searchParams.get('content') : './assets/gs_VIVERSE_CampTaylor_LowRop.sog';
 
             const sseConfig = {
                 poster: posterUrl && createImage(posterUrl),
