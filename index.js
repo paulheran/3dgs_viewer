@@ -102982,7 +102982,7 @@ const main = (app, camera, settingsJson, config) => {
         hasAnimation: false,
         animationDuration: 0,
         animationTime: 0,
-        animationPaused: true,
+        animationPaused: false,
         hasAR: false,
         hasVR: false,
         isFullscreen: false,
