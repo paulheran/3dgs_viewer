@@ -166,27 +166,36 @@ class GaussianSplattingViewer {
             
             // If no file specified, use default file
             if (!filePath) {
-                // Try multiple path strategies for maximum compatibility
-                // Strategy 1: Absolute path from current location
-                const currentPath = window.location.pathname;
-                const basePath = currentPath.substring(0, currentPath.lastIndexOf('/'));
-                const absolutePath = window.location.origin + basePath + '/gs_VIVERSE_CampTaylor_LowRop.compressed.ply';
+                // Build absolute URL for GitHub Pages
+                // This works better when embedded in X iframe
+                const origin = window.location.origin;
+                const pathname = window.location.pathname;
                 
-                // Strategy 2: Root-relative path (works best for GitHub Pages)
-                const rootRelativePath = '/3dgs_viewer/gs_VIVERSE_CampTaylor_LowRop.compressed.ply';
-                
-                // Strategy 3: Simple relative path
-                const relativePath = 'gs_VIVERSE_CampTaylor_LowRop.compressed.ply';
-                
-                // Use root-relative path first (most reliable for GitHub Pages)
-                filePath = rootRelativePath;
-                
-                console.log('Trying paths:', { absolutePath, rootRelativePath, relativePath });
-            } else if (!filePath.startsWith('http') && !filePath.startsWith('/')) {
-                // Make relative paths root-relative for GitHub Pages
-                if (filePath.startsWith('./') || !filePath.includes('/')) {
-                    filePath = '/3dgs_viewer/' + filePath.replace('./', '');
+                // Extract repo name from pathname (e.g., /3dgs_viewer/player.html -> /3dgs_viewer)
+                let repoPath = pathname;
+                if (pathname.includes('/player.html') || pathname.includes('/index.html')) {
+                    repoPath = pathname.substring(0, pathname.lastIndexOf('/'));
                 }
+                
+                // Construct absolute URL
+                filePath = origin + repoPath + '/gs_VIVERSE_CampTaylor_LowRop.compressed.ply';
+                
+                // Fallback: if we can't determine path, try root-relative
+                if (!filePath || filePath === origin + '/gs_VIVERSE_CampTaylor_LowRop.compressed.ply') {
+                    filePath = '/3dgs_viewer/gs_VIVERSE_CampTaylor_LowRop.compressed.ply';
+                }
+                
+                console.log('Constructed file path:', filePath);
+                console.log('Origin:', origin, 'Pathname:', pathname, 'Repo path:', repoPath);
+            } else if (!filePath.startsWith('http') && !filePath.startsWith('/')) {
+                // Make relative paths absolute
+                const origin = window.location.origin;
+                const pathname = window.location.pathname;
+                let repoPath = pathname;
+                if (pathname.includes('/player.html') || pathname.includes('/index.html')) {
+                    repoPath = pathname.substring(0, pathname.lastIndexOf('/'));
+                }
+                filePath = origin + repoPath + '/' + filePath;
             }
             
             console.log('Loading 3DGS file:', filePath);
