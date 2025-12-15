@@ -19,6 +19,7 @@
   }],
   "startMode": "animTrack",
   "hasStartPose": true,
+  "annotations": [],
   "animTracks": [
     {
       "name": "rotate",
