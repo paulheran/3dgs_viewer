@@ -1,12 +1,24 @@
 {
+  "version": 2,
+  "tonemapping": "none",
+  "highPrecisionRendering": false,
   "background": {"color": [0,0,0,0]},
-  "camera": {
-    "fov": 80,
-    "position": [-2.07, 1.12, 0.46],
-    "target": [11.09, -2.75, -0.34],
-    "startAnim": "animTrack"
+  "postEffectSettings": {
+    "sharpness": {"enabled": false, "amount": 0},
+    "bloom": {"enabled": false, "intensity": 1, "blurLevel": 2},
+    "grading": {"enabled": false, "brightness": 0, "contrast": 1, "saturation": 1, "tint": [1,1,1]},
+    "vignette": {"enabled": false, "intensity": 0.5, "inner": 0.3, "outer": 0.75, "curvature": 1},
+    "fringing": {"enabled": false, "intensity": 0.5}
   },
+  "cameras": [{
+    "initial": {
+      "fov": 80,
+      "position": [-2.07, 1.12, 0.46],
+      "target": [11.09, -2.75, -0.34]
+    }
+  }],
   "startMode": "animTrack",
+  "hasStartPose": true,
   "animTracks": [
     {
       "name": "rotate",
