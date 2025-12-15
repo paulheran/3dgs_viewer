@@ -376,12 +376,33 @@
                 };
                 
                 // Auto-log camera position after scene loads (with delay to ensure it's stable)
+                // Also display on screen for easy copying
                 setTimeout(() => {
                     if (window.getCameraPosition) {
-                        console.log('=== Auto-capturing camera position ===');
-                        window.getCameraPosition();
+                        const camData = window.getCameraPosition();
+                        if (camData) {
+                            // Create a visible overlay with camera position
+                            const overlay = document.createElement('div');
+                            overlay.id = 'camera-position-overlay';
+                            overlay.style.cssText = 'position: fixed; top: 10px; right: 10px; background: rgba(0,0,0,0.8); color: white; padding: 15px; border-radius: 8px; font-family: monospace; font-size: 12px; z-index: 10000; max-width: 400px;';
+                            overlay.innerHTML = `
+                                <div style="margin-bottom: 10px; font-weight: bold;">Current Camera Position:</div>
+                                <div style="margin-bottom: 5px;">Position: [${camData.position.join(', ')}]</div>
+                                <div style="margin-bottom: 5px;">Target: [${camData.target.join(', ')}]</div>
+                                <div style="margin-bottom: 10px;">FOV: ${camData.fov}</div>
+                                <button onclick="this.parentElement.remove()" style="background: #444; color: white; border: 1px solid #666; padding: 5px 10px; border-radius: 4px; cursor: pointer;">Close</button>
+                            `;
+                            document.body.appendChild(overlay);
+                            
+                            // Auto-remove after 30 seconds
+                            setTimeout(() => {
+                                if (overlay.parentElement) {
+                                    overlay.remove();
+                                }
+                            }, 30000);
+                        }
                     }
-                }, 3000);
+                }, 5000);
             });
         </script>
     </body>
