@@ -355,7 +355,8 @@
                 window.getCameraPosition = () => {
                     if (viewer && viewer.cameraManager) {
                         const cam = viewer.cameraManager.camera;
-                        const focusPoint = new pc.Vec3();
+                        // Use a plain object instead of pc.Vec3 so we don't depend on the pc global
+                        const focusPoint = { x: 0, y: 0, z: 0 };
                         cam.calcFocusPoint(focusPoint);
                         const pos = cam.position;
                         const target = focusPoint;
