@@ -355,14 +355,43 @@
                 window.getCameraPosition = () => {
                     if (viewer && viewer.cameraManager) {
                         const cam = viewer.cameraManager.camera;
-                        // Use a plain object instead of pc.Vec3 so we don't depend on the pc global
-                        const focusPoint = { x: 0, y: 0, z: 0 };
+                        const app = viewer.global.app;
+                        
+                        // Get Vec3 from PlayCanvas
+                        const Vec3 = app.constructor.Vec3 || (window.pc && window.pc.Vec3);
+                        
+                        if (!Vec3) {
+                            // Fallback: calculate manually or use camera entity
+                            const cameraEntity = viewer.global.camera;
+                            if (cameraEntity) {
+                                const pos = cameraEntity.getPosition();
+                                const forward = cameraEntity.forward;
+                                const distance = cam.distance || 10;
+                                const target = {
+                                    x: pos.x + forward.x * distance,
+                                    y: pos.y + forward.y * distance,
+                                    z: pos.z + forward.z * distance
+                                };
+                                const result = {
+                                    position: [Math.round(pos.x * 100) / 100, Math.round(pos.y * 100) / 100, Math.round(pos.z * 100) / 100],
+                                    target: [Math.round(target.x * 100) / 100, Math.round(target.y * 100) / 100, Math.round(target.z * 100) / 100],
+                                    fov: Math.round(cam.fov || cameraEntity.camera.fov)
+                                };
+                                console.log('Current camera settings for settings.json:');
+                                console.log(JSON.stringify(result, null, 2));
+                                return result;
+                            }
+                            console.error('Cannot access camera entity');
+                            return null;
+                        }
+                        
+                        // Use Vec3 if available
+                        const focusPoint = new Vec3();
                         cam.calcFocusPoint(focusPoint);
                         const pos = cam.position;
-                        const target = focusPoint;
                         const result = {
                             position: [Math.round(pos.x * 100) / 100, Math.round(pos.y * 100) / 100, Math.round(pos.z * 100) / 100],
-                            target: [Math.round(target.x * 100) / 100, Math.round(target.y * 100) / 100, Math.round(target.z * 100) / 100],
+                            target: [Math.round(focusPoint.x * 100) / 100, Math.round(focusPoint.y * 100) / 100, Math.round(focusPoint.z * 100) / 100],
                             fov: Math.round(cam.fov)
                         };
                         console.log('Current camera settings for settings.json:');
