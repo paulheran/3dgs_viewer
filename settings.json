@@ -2,8 +2,8 @@
   "background": {"color": [0,0,0,0]},
   "camera": {
     "fov": 80,
-    "position": [-1.49, 0.95, 0.39],
-    "target": [11.72, -2.83, -0.17],
+    "position": [-1.48, 0.82, 0.39],
+    "target": [11.79, -2.59, -0.66],
     "startAnim": "orbit"
   },
   "animTracks": []
