@@ -404,6 +404,14 @@
                     console.error('Viewer not ready yet. Wait for scene to load.');
                     return null;
                 };
+
+                // Auto-log camera position to console once after scene loads
+                setTimeout(() => {
+                    if (window.getCameraPosition) {
+                        console.log('=== Auto-capturing camera position ===');
+                        window.getCameraPosition();
+                    }
+                }, 5000);
             });
         </script>
     </body>
