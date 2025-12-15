@@ -359,20 +359,29 @@
                         cam.calcFocusPoint(focusPoint);
                         const pos = cam.position;
                         const target = focusPoint;
-                        console.log('Current camera settings for settings.json:');
-                        console.log(JSON.stringify({
-                            position: [pos.x, pos.y, pos.z],
-                            target: [target.x, target.y, target.z],
-                            fov: cam.fov
-                        }, null, 2));
-                        return {
-                            position: [pos.x, pos.y, pos.z],
-                            target: [target.x, target.y, target.z],
-                            fov: cam.fov
+                        const result = {
+                            position: [Math.round(pos.x * 100) / 100, Math.round(pos.y * 100) / 100, Math.round(pos.z * 100) / 100],
+                            target: [Math.round(target.x * 100) / 100, Math.round(target.y * 100) / 100, Math.round(target.z * 100) / 100],
+                            fov: Math.round(cam.fov)
                         };
+                        console.log('Current camera settings for settings.json:');
+                        console.log(JSON.stringify(result, null, 2));
+                        console.log('Copy this to your settings.json camera section:');
+                        console.log(`"position": [${result.position.join(', ')}],`);
+                        console.log(`"target": [${result.target.join(', ')}],`);
+                        return result;
                     }
+                    console.error('Viewer not ready yet. Wait for scene to load.');
                     return null;
                 };
+                
+                // Auto-log camera position after scene loads (with delay to ensure it's stable)
+                setTimeout(() => {
+                    if (window.getCameraPosition) {
+                        console.log('=== Auto-capturing camera position ===');
+                        window.getCameraPosition();
+                    }
+                }, 3000);
             });
         </script>
     </body>
