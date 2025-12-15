@@ -101150,7 +101150,7 @@ class Annotations {
  * @param duration - The duration of the animation in seconds.
  * @returns - The animation track object containing position and target keyframes.
  */
-const createRotateTrack = (position, target, fov, keys = 12, duration = 20) => {
+const createRotateTrack = (position, target, fov, keys = 12, duration = 40) => {
     const times = new Array(keys).fill(0).map((_, i) => i / keys * duration);
     const positions = [];
     const targets = [];
@@ -101158,6 +101158,8 @@ const createRotateTrack = (position, target, fov, keys = 12, duration = 20) => {
     const mat = new Mat4();
     const vec = new Vec3();
     const dif = new Vec3(position.x - target.x, position.y - target.y, position.z - target.z);
+    // Scale down orbit radius so the path is tighter
+    dif.mulScalar(0.4);
     for (let i = 0; i < keys; ++i) {
         mat.setFromEulerAngles(0, -i / keys * 360, 0);
         mat.transformPoint(dif, vec);
