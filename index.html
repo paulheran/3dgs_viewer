@@ -347,6 +347,32 @@
                 ]);
 
                 const viewer = await main(appElement.app, cameraElement.entity, settingsJson, config);
+                
+                // Expose viewer globally for debugging
+                window.viewer = viewer;
+                
+                // Helper function to get current camera position for settings.json
+                window.getCameraPosition = () => {
+                    if (viewer && viewer.cameraManager) {
+                        const cam = viewer.cameraManager.camera;
+                        const focusPoint = new pc.Vec3();
+                        cam.calcFocusPoint(focusPoint);
+                        const pos = cam.position;
+                        const target = focusPoint;
+                        console.log('Current camera settings for settings.json:');
+                        console.log(JSON.stringify({
+                            position: [pos.x, pos.y, pos.z],
+                            target: [target.x, target.y, target.z],
+                            fov: cam.fov
+                        }, null, 2));
+                        return {
+                            position: [pos.x, pos.y, pos.z],
+                            target: [target.x, target.y, target.z],
+                            fov: cam.fov
+                        };
+                    }
+                    return null;
+                };
             });
         </script>
     </body>
