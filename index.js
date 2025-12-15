@@ -101810,10 +101810,10 @@ class InputController {
     });
     joystick = { base: null, stick: null };
     // this gets overridden by the viewer based on scene size
-    moveSpeed = 2;
-    orbitSpeed = 9;
-    pinchSpeed = 0.2;
-    wheelSpeed = 0.03;
+    moveSpeed = 4;
+    orbitSpeed = 18;
+    pinchSpeed = 0.4;
+    wheelSpeed = 0.06;
     constructor(global) {
         const { app, camera, events, state } = global;
         const canvas = app.graphicsDevice.canvas;
