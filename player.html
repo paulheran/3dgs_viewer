@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>3DGS Viewer - Player</title>
+        <title>3D Gaussian Splatting Viewer - SuperSplat</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
         <base href="">
@@ -14,11 +14,9 @@
             };
 
             const url = new URL(location.href);
-
             const posterUrl = url.searchParams.get('poster');
             const skyboxUrl = url.searchParams.get('skybox');
             const settingsUrl = url.searchParams.has('settings') ? url.searchParams.get('settings') : './settings.json';
-            // Default to .sog file, can be overridden via URL parameter
             const contentUrl = url.searchParams.has('content') ? url.searchParams.get('content') : './assets/gs_VIVERSE_CampTaylor_LowRop.sog';
 
             const sseConfig = {
@@ -31,7 +29,7 @@
                 ministats: url.searchParams.has('ministats'),
                 colorize: url.searchParams.has('colorize'),
                 unified: url.searchParams.has('unified'),
-                aa: url.searchParams.has('aa')
+                aa: true  // Force antialiasing for better quality
             };
 
             window.sse = {
@@ -41,17 +39,14 @@
         </script>
     </head>
     <body>
-        <pc-app antialias="false" depth="true" high-resolution="true" stencil="false">
+        <pc-app antialias="true" depth="true" high-resolution="true" stencil="false">
             <pc-scene>
-                <!-- Camera (with XR support) -->
                 <pc-entity name="camera root">
                     <pc-entity name="camera"></pc-entity>
                 </pc-entity>
-                <!-- Light (for XR controllers) -->
                 <pc-entity name="light" rotation="35 45 0">
                     <pc-light color="white" intensity="1.5"></pc-light>
                 </pc-entity>
-                <!-- Splat -->
                 <pc-entity name="splat" rotation="0 0 180">
                 </pc-entity>
             </pc-scene>
@@ -59,23 +54,16 @@
 
         <div id="ui">
             <div id="poster"></div>
-
-            <!-- Loading Indicator -->
             <div id="loadingWrap">
                 <div id="loadingText"></div>
                 <div id="loadingBar"></div>
             </div>
-
             <div id="controlsWrap" class="faded-in">
-
-                <!-- Timeline Panel -->
                 <div id="timelineContainer" class="hidden">
                     <div id="line"></div>
                     <div id="handle"></div>
                     <div id="time" class="hidden">0:00</div>
                 </div>
-
-                <!-- Buttons Panel -->
                 <div id="buttonsContainer">
                     <button id="play" class="controlButton hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
@@ -89,9 +77,7 @@
                             <g class='fill'><use href="#pauseIcon"/></g>
                         </svg>
                     </button>
-
                     <div class="spacer"></div>
-
                     <button id="orbitCamera" class="controlButton toggle left">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
                             <g class='stroke'><use href="#orbitIcon"/></g>
@@ -104,7 +90,6 @@
                             <g class='fill'><use href="#flyIcon"/></g>
                         </svg>
                     </button>
-
                     <button id="arMode" class="controlButton hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" width="28" height="28">
                             <g class='stroke'><use href="#arIcon"/></g>
@@ -117,7 +102,6 @@
                             <g class='fill'><use href="#vrIcon"/></g>
                         </svg>
                     </button>
-
                     <button id="info" class="controlButton">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
                             <g class='stroke'><use href="#infoIcon"/></g>
@@ -130,7 +114,6 @@
                             <g class='fill'><use href="#settingsIcon"/></g>
                         </svg>
                     </button>
-
                     <button id="enterFullscreen" class="controlButton">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24">
                             <g class='stroke'><use href="#enterFullscreenIcon"/></g>
@@ -145,8 +128,6 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Settings Panel -->
             <div id="settingsPanel" class="hidden">
                 <div class="settingsRow">
                     <div id="hqCheck" class="checkMark">✓</div>
@@ -162,8 +143,6 @@
                     <button id="reset">Reset</button>
                 </div>
             </div>
-
-            <!-- Info Panel -->
             <div id="infoPanel" class="hidden">
                 <div id="infoPanelContent" onpointerdown="event.stopPropagation()">
                     <div id="tabs">
@@ -243,17 +222,12 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Touch Joystick -->
             <div id="joystickBase" class="hidden">
                 <div id="joystick"></div>
             </div>
-
-            <!-- Tooltip -->
             <div id="tooltip"></div>
         </div>
 
-        <!-- SVG Icons (same as index.html) -->
         <svg>
             <symbol id="playIcon" viewBox="-2 0 24 24">
                 <path
@@ -303,21 +277,17 @@
             </symbol>
         </svg>
 
-        <!-- Application Script -->
         <script type="module">
             import { main } from './index.js';
 
             const { config, settings } = window.sse;
             const { poster } = config;
 
-            // Show the poster image
             if (poster) {
                 const element = document.getElementById('poster');
                 element.style.setProperty('--poster-url', `url(${poster.src})`);
                 element.style.display = 'block';
                 element.style.filter = 'blur(40px)';
-
-                // hide the canvas
                 document.documentElement.style.setProperty('--canvas-opacity', '0');
             }
 
@@ -329,7 +299,19 @@
                 ]);
 
                 const viewer = await main(appElement.app, cameraElement.entity, settingsJson, config);
+                
+                // Force high quality rendering for embedded player
+                if (viewer && viewer.global && viewer.global.app) {
+                    const gsplat = viewer.global.app.scene.gsplat;
+                    if (gsplat) {
+                        // Force high quality settings
+                        gsplat.lodRangeMin = 0;
+                        gsplat.lodRangeMax = 8;
+                        gsplat.splatBudget = 6000000; // 6 million splats for desktop quality
+                    }
+                }
             });
         </script>
     </body>
 </html>
+

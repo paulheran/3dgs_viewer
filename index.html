@@ -12,8 +12,8 @@
         <meta name="twitter:description" content="Interactive 3D Gaussian Splatting viewer - Explore 3D scenes with SuperSplat">
         <meta name="twitter:image" content="https://paulheran.github.io/3dgs_viewer/preview.jpg">
         <meta name="twitter:player" content="https://paulheran.github.io/3dgs_viewer/player.html">
-        <meta name="twitter:player:width" content="1280">
-        <meta name="twitter:player:height" content="720">
+        <meta name="twitter:player:width" content="1920">
+        <meta name="twitter:player:height" content="1080">
         
         <!-- Open Graph Meta Tags -->
         <meta property="og:type" content="video.other">
@@ -59,7 +59,7 @@
         </script>
     </head>
     <body>
-        <pc-app antialias="false" depth="true" high-resolution="true" stencil="false">
+        <pc-app antialias="true" depth="true" high-resolution="true" stencil="false">
             <pc-scene>
                 <!-- Camera (with XR support) -->
                 <pc-entity name="camera root">
@@ -388,6 +388,17 @@
                 ]);
 
                 viewerInstance = await main(appElement.app, cameraElement.entity, settingsJson, config);
+                
+                // Force high quality rendering
+                if (viewerInstance && viewerInstance.global && viewerInstance.global.app) {
+                    const gsplat = viewerInstance.global.app.scene.gsplat;
+                    if (gsplat) {
+                        // Force high quality settings
+                        gsplat.lodRangeMin = 0;
+                        gsplat.lodRangeMax = 8;
+                        gsplat.splatBudget = 6000000; // 6 million splats for desktop quality
+                    }
+                }
             });
         </script>
     </body>
