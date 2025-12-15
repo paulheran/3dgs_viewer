@@ -351,6 +351,56 @@
                 // Expose viewer globally for debugging
                 window.viewer = viewer;
                 
+                // Debug animation state
+                window.debugAnimation = () => {
+                    if (!viewer) {
+                        console.error('Viewer not loaded');
+                        return;
+                    }
+                    const { state, settings } = viewer.global;
+                    console.log('=== Animation Debug Info ===');
+                    console.log('Settings loaded:', settings);
+                    console.log('Settings.animTracks:', settings.animTracks);
+                    console.log('Settings.startMode:', settings.startMode);
+                    console.log('State.hasAnimation:', state.hasAnimation);
+                    console.log('State.cameraMode:', state.cameraMode);
+                    console.log('State.animationPaused:', state.animationPaused);
+                    console.log('State.animationDuration:', state.animationDuration);
+                    console.log('State.animationTime:', state.animationTime);
+                    
+                    if (viewer.cameraManager) {
+                        // Try to access controllers
+                        console.log('CameraManager exists');
+                        // Check if we can see the controllers
+                        const controllers = viewer.cameraManager.controllers || {};
+                        console.log('Controllers:', Object.keys(controllers));
+                        if (controllers.anim) {
+                            console.log('Animation controller exists');
+                            console.log('Animation state:', controllers.anim.animState);
+                        } else {
+                            console.warn('Animation controller does NOT exist');
+                        }
+                    } else {
+                        console.error('CameraManager does not exist');
+                    }
+                    
+                    return {
+                        hasAnimation: state.hasAnimation,
+                        cameraMode: state.cameraMode,
+                        animationPaused: state.animationPaused,
+                        animationDuration: state.animationDuration,
+                        animationTime: state.animationTime
+                    };
+                };
+                
+                // Auto-debug after scene loads
+                setTimeout(() => {
+                    console.log('=== Running auto-debug ===');
+                    if (window.debugAnimation) {
+                        window.debugAnimation();
+                    }
+                }, 6000);
+                
                 // Helper function to get current camera position for settings.json
                 window.getCameraPosition = () => {
                     if (viewer && viewer.cameraManager) {
