@@ -339,6 +339,47 @@
                 document.documentElement.style.setProperty('--canvas-opacity', '0');
             }
 
+            // Store viewer reference globally
+            let viewerInstance = null;
+            
+            // Helper function to get current camera pose for keyframing
+            window.getCameraPose = () => {
+                if (!viewerInstance || !viewerInstance.cameraManager) {
+                    console.error('Viewer not ready yet. Wait for scene to load.');
+                    return null;
+                }
+                const cam = viewerInstance.cameraManager.camera;
+                const cameraEntity = viewerInstance.global.camera;
+                
+                if (cameraEntity) {
+                    const pos = cameraEntity.getPosition();
+                    const forward = cameraEntity.forward;
+                    const distance = cam.distance || 10;
+                    const target = {
+                        x: pos.x + forward.x * distance,
+                        y: pos.y + forward.y * distance,
+                        z: pos.z + forward.z * distance
+                    };
+                    const result = {
+                        position: [
+                            Math.round(pos.x * 100) / 100,
+                            Math.round(pos.y * 100) / 100,
+                            Math.round(pos.z * 100) / 100
+                        ],
+                        target: [
+                            Math.round(target.x * 100) / 100,
+                            Math.round(target.y * 100) / 100,
+                            Math.round(target.z * 100) / 100
+                        ],
+                        fov: Math.round(cam.fov || cameraEntity.camera.fov)
+                    };
+                    console.log('Current camera pose:');
+                    console.log(JSON.stringify(result, null, 2));
+                    return result;
+                }
+                return null;
+            };
+            
             document.addEventListener('DOMContentLoaded', async () => {
                 const [appElement, cameraElement, settingsJson] = await Promise.all([
                     document.querySelector('pc-app').ready(),
@@ -346,45 +387,7 @@
                     settings
                 ]);
 
-                const viewer = await main(appElement.app, cameraElement.entity, settingsJson, config);
-                
-                // Helper function to get current camera pose for keyframing
-                window.getCameraPose = () => {
-                    if (!viewer || !viewer.cameraManager) {
-                        console.error('Viewer not ready yet. Wait for scene to load.');
-                        return null;
-                    }
-                    const cam = viewer.cameraManager.camera;
-                    const cameraEntity = viewer.global.camera;
-                    
-                    if (cameraEntity) {
-                        const pos = cameraEntity.getPosition();
-                        const forward = cameraEntity.forward;
-                        const distance = cam.distance || 10;
-                        const target = {
-                            x: pos.x + forward.x * distance,
-                            y: pos.y + forward.y * distance,
-                            z: pos.z + forward.z * distance
-                        };
-                        const result = {
-                            position: [
-                                Math.round(pos.x * 100) / 100,
-                                Math.round(pos.y * 100) / 100,
-                                Math.round(pos.z * 100) / 100
-                            ],
-                            target: [
-                                Math.round(target.x * 100) / 100,
-                                Math.round(target.y * 100) / 100,
-                                Math.round(target.z * 100) / 100
-                            ],
-                            fov: Math.round(cam.fov || cameraEntity.camera.fov)
-                        };
-                        console.log('Current camera pose:');
-                        console.log(JSON.stringify(result, null, 2));
-                        return result;
-                    }
-                    return null;
-                };
+                viewerInstance = await main(appElement.app, cameraElement.entity, settingsJson, config);
             });
         </script>
     </body>
