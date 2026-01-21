@@ -43,7 +43,7 @@
                 poster: posterUrl && createImage(posterUrl),
                 skyboxUrl,
                 contentUrl,
-                contents: fetch(contentUrl).then(response => response.arrayBuffer()),
+                contents: fetch(contentUrl),
                 noui: url.searchParams.has('noui'),
                 noanim: url.searchParams.has('noanim'),
                 ministats: url.searchParams.has('ministats'),
