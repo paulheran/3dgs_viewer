@@ -330,13 +330,13 @@
                 }
                 
                 // Ensure canvas is visible
-                document.documentElement.style.setProperty(\'--canvas-opacity\', \'1\');
+                document.documentElement.style.setProperty('--canvas-opacity', '1');
                 const viewer = await main(appElement.app, cameraElement.entity, settingsJson, config);
                 
                 // Ensure canvas stays visible after viewer loads
                 if (viewer && viewer.global && viewer.global.events) {
                     viewer.global.events.on(\'firstFrame\', () => {
-                        document.documentElement.style.setProperty(\'--canvas-opacity\', \'1\');
+                        document.documentElement.style.setProperty('--canvas-opacity', '1');
                         const posterEl = document.getElementById(\'poster\');
                         if (posterEl) {
                             posterEl.style.display = \'none\';
