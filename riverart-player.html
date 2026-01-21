@@ -74,6 +74,18 @@
                     <button id="pause" class="controlButton hidden">
                         <svg xmlns="http://www.w3.org/2000/svg" width="24px" height="24px">
                             <g class='stroke'><use href="#pauseIcon"/></g>
+
+        <!-- SuperSplat iframe embed -->
+        <div style="position: fixed; top: 20px; right: 20px; z-index: 1000; width: 400px; height: 300px; background: #000; border-radius: 8px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);">
+            <iframe 
+                id="viewer" 
+                width="100%" 
+                height="100%" 
+                style="border: none; border-radius: 8px;" 
+                allow="fullscreen; xr-spatial-tracking" 
+                src="https://superspl.at/s?id=f7b30517">
+            </iframe>
+        </div>
                             <g class='fill'><use href="#pauseIcon"/></g>
                         </svg>
                     </button>
