@@ -1,26 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
-        <title>RiverArt - 3D Gaussian Splatting Viewer</title>
+        <title>3D Gaussian Splatting Viewer - SuperSplat</title>
         <meta charset="UTF-8">
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
         
         <!-- Twitter Card / X Card Meta Tags for Embedding -->
         <meta name="twitter:card" content="player">
         <meta name="twitter:site" content="@paulheran">
-        <meta name="twitter:title" content="RiverArt - 3D Gaussian Splatting Viewer">
-        <meta name="twitter:description" content="RiverArt - Interactive 3D Gaussian Splatting viewer">
+        <meta name="twitter:title" content="3D Gaussian Splatting Viewer">
+        <meta name="twitter:description" content="Interactive 3D Gaussian Splatting viewer - Explore 3D scenes with SuperSplat">
         <meta name="twitter:image" content="https://paulheran.github.io/3dgs_viewer/preview.jpg">
-        <meta name="twitter:player" content="https://paulheran.github.io/3dgs_viewer/riverart-player.html">
+        <meta name="twitter:player" content="https://paulheran.github.io/3dgs_viewer/player.html">
         <meta name="twitter:player:width" content="1920">
         <meta name="twitter:player:height" content="1080">
         
         <!-- Open Graph Meta Tags -->
         <meta property="og:type" content="video.other">
-        <meta property="og:title" content="RiverArt - 3D Gaussian Splatting Viewer">
-        <meta property="og:description" content="RiverArt - Interactive 3D Gaussian Splatting viewer">
+        <meta property="og:title" content="3D Gaussian Splatting Viewer">
+        <meta property="og:description" content="Interactive 3D Gaussian Splatting viewer - Explore 3D scenes with SuperSplat">
         <meta property="og:image" content="https://paulheran.github.io/3dgs_viewer/preview.jpg">
-        <meta property="og:url" content="https://paulheran.github.io/3dgs_viewer/riverart.html">
+        <meta property="og:url" content="https://paulheran.github.io/3dgs_viewer/">
         
         <base href="">
         <link rel="stylesheet" href="./index.css">
@@ -37,7 +37,7 @@
             const skyboxUrl = url.searchParams.get('skybox');
             const settingsUrl = url.searchParams.has('settings') ? url.searchParams.get('settings') : './settings.json';
             // Default to .sog file if available, fallback to .ply
-            const contentUrl = url.searchParams.has('content') ? url.searchParams.get('content') : './assets/RiverArt_cutout.sog';
+            const contentUrl = url.searchParams.has('content') ? url.searchParams.get('content') : './assets/gs_VIVERSE_CampTaylor_LowRop.sog';
 
             const sseConfig = {
                 poster: posterUrl && createImage(posterUrl),
@@ -341,16 +341,6 @@
 
             // Store viewer reference globally
             let viewerInstance = null;
-            
-            // Auto-frame RiverArt scene when first frame renders
-            window.firstFrame = () => {
-                if (viewerInstance && viewerInstance.global) {
-                    // Small delay to ensure scene is fully ready
-                    setTimeout(() => {
-                        viewerInstance.global.events.fire('inputEvent', 'frame', null);
-                    }, 500);
-                }
-            };
             
             // Helper function to get current camera pose for keyframing
             window.getCameraPose = () => {
