@@ -315,7 +315,6 @@
             // Skip poster for auto-play - start immediately
             document.documentElement.style.setProperty('--canvas-opacity', '1');
 
-            document.documentElement.style.setProperty('--canvas-opacity', '1');
             document.addEventListener('DOMContentLoaded', async () => {
                 const [appElement, cameraElement, settingsJson] = await Promise.all([
                     document.querySelector('pc-app').ready(),
