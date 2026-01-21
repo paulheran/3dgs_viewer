@@ -387,7 +387,7 @@
                     settings
                 ]);
 
-                const resolvedConfig = { ...config, contents: await config.contents }; viewerInstance = await main(appElement.app, cameraElement.entity, settingsJson, resolvedConfig);
+                const contentsBuffer = await config.contents; console.log("Contents loaded:", contentsBuffer.byteLength, "bytes"); const resolvedConfig = { ...config, contents: contentsBuffer }; viewerInstance = await main(appElement.app, cameraElement.entity, settingsJson, resolvedConfig);
                 
                 // Force high quality rendering
                 if (viewerInstance && viewerInstance.global && viewerInstance.global.app) {
