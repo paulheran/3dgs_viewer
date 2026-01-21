@@ -387,7 +387,7 @@
                     settings
                 ]);
 
-                viewerInstance = await main(appElement.app, cameraElement.entity, settingsJson, config);
+                const resolvedConfig = { ...config, contents: await config.contents }; viewerInstance = await main(appElement.app, cameraElement.entity, settingsJson, resolvedConfig);
                 
                 // Force high quality rendering
                 if (viewerInstance && viewerInstance.global && viewerInstance.global.app) {

@@ -298,7 +298,7 @@
                     settings
                 ]);
 
-                const viewer = await main(appElement.app, cameraElement.entity, settingsJson, config);
+                const resolvedConfig = { ...config, contents: await config.contents }; const viewer = await main(appElement.app, cameraElement.entity, settingsJson, resolvedConfig);
                 
                 // Force high quality rendering for embedded player
                 if (viewer && viewer.global && viewer.global.app) {
