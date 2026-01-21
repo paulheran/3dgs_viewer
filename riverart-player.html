@@ -330,19 +330,18 @@
                         if (posterEl) {
                             posterEl.style.display = 'none';
                         }
+                        
+                        // Force high quality rendering after first frame
+                        if (viewer && viewer.global && viewer.global.app) {
+                            const gsplat = viewer.global.app.scene.gsplat;
+                            if (gsplat) {
+                                // Force high quality settings
+                                gsplat.lodRangeMin = 0;
+                                gsplat.lodRangeMax = 8;
+                                gsplat.splatBudget = 6000000; // 6 million splats for desktop quality
+                            }
+                        }
                     });
-                }
-                
-                // Force high quality rendering for embedded player
-                if (viewer && viewer.global && viewer.global.app) {
-                    const gsplat = viewer.global.app.scene.gsplat;
-                    if (gsplat) {
-                        // Force high quality settings
-                        gsplat.lodRangeMin = 0;
-                        gsplat.lodRangeMax = 8;
-                        gsplat.splatBudget = 6000000; // 6 million splats for desktop quality
-                    }
-
                 }
             });
         </script>
