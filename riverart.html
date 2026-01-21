@@ -399,6 +399,17 @@
                         gsplat.splatBudget = 6000000; // 6 million splats for desktop quality
                     }
                 }
+
+                    // Auto-frame the scene after it loads
+                    const autoFrame = () => {
+                        if (viewerInstance && viewerInstance.global) {
+                            viewerInstance.global.events.fire('inputEvent', 'frame', null);
+                            console.log('Auto-framed RiverArt scene.');
+                        }
+                    };
+                    
+                    // Try to auto-frame after a delay
+                    setTimeout(autoFrame, 2000);
             });
         </script>
     </body>
