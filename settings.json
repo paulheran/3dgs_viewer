@@ -2,7 +2,7 @@
   "version": 2,
   "tonemapping": "none",
   "highPrecisionRendering": false,
-  "background": {"color": [0,0,0,0]},
+  "background": {"color": [0,0,0,1]},
   "postEffectSettings": {
     "sharpness": {"enabled": false, "amount": 0},
     "bloom": {"enabled": false, "intensity": 1, "blurLevel": 2},
