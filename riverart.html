@@ -399,6 +399,14 @@
                         gsplat.splatBudget = 6000000; // 6 million splats for desktop quality
                     }
                 }
+                
+                // Auto-frame the scene after it loads
+                if (viewerInstance && viewerInstance.global) {
+                    viewerInstance.global.events.on('firstFrame', () => {
+                        // Frame the scene automatically after first render
+                        viewerInstance.global.events.fire('inputEvent', 'frame', null);
+                    });
+                }
             });
         </script>
     </body>
