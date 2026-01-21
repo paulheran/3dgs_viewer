@@ -291,6 +291,16 @@
                 document.documentElement.style.setProperty('--canvas-opacity', '0');
             }
 
+            // Auto-frame RiverArt scene when first frame renders
+            window.firstFrame = () => {
+                if (window.viewer && window.viewer.global) {
+                    // Small delay to ensure scene is fully ready
+                    setTimeout(() => {
+                        window.viewer.global.events.fire('inputEvent', 'frame', null);
+                    }, 500);
+                }
+            };
+
             document.addEventListener('DOMContentLoaded', async () => {
                 const [appElement, cameraElement, settingsJson] = await Promise.all([
                     document.querySelector('pc-app').ready(),
@@ -299,6 +309,7 @@
                 ]);
 
                 const viewer = await main(appElement.app, cameraElement.entity, settingsJson, config);
+                window.viewer = viewer; // Store globally for firstFrame callback
                 
                 // Force high quality rendering for embedded player
                 if (viewer && viewer.global && viewer.global.app) {
@@ -309,14 +320,6 @@
                         gsplat.lodRangeMax = 8;
                         gsplat.splatBudget = 6000000; // 6 million splats for desktop quality
                     }
-                }
-                
-                // Auto-frame the scene after it loads
-                if (viewer && viewer.global) {
-                    viewer.global.events.on('firstFrame', () => {
-                        // Frame the scene automatically after first render
-                        viewer.global.events.fire('inputEvent', 'frame', null);
-                    });
                 }
             });
         </script>

@@ -342,6 +342,16 @@
             // Store viewer reference globally
             let viewerInstance = null;
             
+            // Auto-frame RiverArt scene when first frame renders
+            window.firstFrame = () => {
+                if (viewerInstance && viewerInstance.global) {
+                    // Small delay to ensure scene is fully ready
+                    setTimeout(() => {
+                        viewerInstance.global.events.fire('inputEvent', 'frame', null);
+                    }, 500);
+                }
+            };
+            
             // Helper function to get current camera pose for keyframing
             window.getCameraPose = () => {
                 if (!viewerInstance || !viewerInstance.cameraManager) {
@@ -398,14 +408,6 @@
                         gsplat.lodRangeMax = 8;
                         gsplat.splatBudget = 6000000; // 6 million splats for desktop quality
                     }
-                }
-                
-                // Auto-frame the scene after it loads
-                if (viewerInstance && viewerInstance.global) {
-                    viewerInstance.global.events.on('firstFrame', () => {
-                        // Frame the scene automatically after first render
-                        viewerInstance.global.events.fire('inputEvent', 'frame', null);
-                    });
                 }
             });
         </script>
