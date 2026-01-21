@@ -319,6 +319,7 @@
                 const [appElement, cameraElement, settingsJson] = await Promise.all([
                     document.querySelector('pc-app').ready(),
                     document.querySelector('pc-entity[name="camera"]').ready(),
+                    settings
                 ]);
 
                 
@@ -328,14 +329,20 @@
                     posterElement.style.display = 'none';
                 }
                 
-                // Auto-play: Ensure canvas is visible and poster is hidden
-                const posterElement = document.getElementById('poster');
-                if (posterElement) {
-                    posterElement.style.display = 'none';
-                }
-                document.documentElement.style.setProperty('--canvas-opacity', '1');
-                document.documentElement.style.setProperty('--canvas-opacity', '1');
+                // Ensure canvas is visible
+                document.documentElement.style.setProperty(\'--canvas-opacity\', \'1\');
                 const viewer = await main(appElement.app, cameraElement.entity, settingsJson, config);
+                
+                // Ensure canvas stays visible after viewer loads
+                if (viewer && viewer.global && viewer.global.events) {
+                    viewer.global.events.on(\'firstFrame\', () => {
+                        document.documentElement.style.setProperty(\'--canvas-opacity\', \'1\');
+                        const posterEl = document.getElementById(\'poster\');
+                        if (posterEl) {
+                            posterEl.style.display = \'none\';
+                        }
+                    });
+                }
                 
                 // Force high quality rendering for embedded player
                 if (viewer && viewer.global && viewer.global.app) {
