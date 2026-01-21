@@ -45,7 +45,7 @@
                 contentUrl,
                 contents: fetch(contentUrl).then(response => response.arrayBuffer()),
                 noui: url.searchParams.has('noui'),
-                noanim: url.searchParams.has('noanim'),
+                noanim: true,
                 ministats: url.searchParams.has('ministats'),
                 colorize: url.searchParams.has('colorize'),
                 unified: url.searchParams.has('unified'),
@@ -400,16 +400,6 @@
                     }
                 }
 
-                    // Auto-frame the scene after it loads
-                    const autoFrame = () => {
-                        if (viewerInstance && viewerInstance.global) {
-                            viewerInstance.global.events.fire('inputEvent', 'frame', null);
-                            console.log('Auto-framed RiverArt scene.');
-                        }
-                    };
-                    
-                    // Try to auto-frame after a delay
-                    setTimeout(autoFrame, 2000);
             });
         </script>
     </body>

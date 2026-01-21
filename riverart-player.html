@@ -25,7 +25,7 @@
                 contentUrl,
                 contents: fetch(contentUrl).then(response => response.arrayBuffer()),
                 noui: url.searchParams.has('noui'),
-                noanim: url.searchParams.has('noanim'),
+                noanim: true,
                 ministats: url.searchParams.has('ministats'),
                 colorize: url.searchParams.has('colorize'),
                 unified: url.searchParams.has('unified'),
@@ -310,16 +310,6 @@
                         gsplat.splatBudget = 6000000; // 6 million splats for desktop quality
                     }
 
-                    // Auto-frame the scene after it loads
-                    const autoFrame = () => {
-                        if (viewer && viewer.global) {
-                            viewer.global.events.fire('inputEvent', 'frame', null);
-                            console.log('Auto-framed RiverArt scene.');
-                        }
-                    };
-                    
-                    // Try to auto-frame after a delay
-                    setTimeout(autoFrame, 2000);
                 }
             });
         </script>
