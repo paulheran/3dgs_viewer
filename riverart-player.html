@@ -311,37 +311,17 @@
                     settings
                 ]);
 
-                
-                // Auto-play: Hide poster and show canvas immediately
-                const posterElement = document.getElementById('poster');
-                if (posterElement) {
-                    posterElement.style.display = 'none';
-                }
-                
-                // Ensure canvas is visible
-                document.documentElement.style.setProperty('--canvas-opacity', '1');
                 const viewer = await main(appElement.app, cameraElement.entity, settingsJson, config);
                 
-                // Ensure canvas stays visible after viewer loads
-                if (viewer && viewer.global && viewer.global.events) {
-                    viewer.global.events.on('firstFrame', () => {
-                        document.documentElement.style.setProperty('--canvas-opacity', '1');
-                        const posterEl = document.getElementById('poster');
-                        if (posterEl) {
-                            posterEl.style.display = 'none';
-                        }
-                        
-                        // Force high quality rendering after first frame
-                        if (viewer && viewer.global && viewer.global.app) {
-                            const gsplat = viewer.global.app.scene.gsplat;
-                            if (gsplat) {
-                                // Force high quality settings
-                                gsplat.lodRangeMin = 0;
-                                gsplat.lodRangeMax = 8;
-                                gsplat.splatBudget = 6000000; // 6 million splats for desktop quality
-                            }
-                        }
-                    });
+                // Force high quality rendering for embedded player
+                if (viewer && viewer.global && viewer.global.app) {
+                    const gsplat = viewer.global.app.scene.gsplat;
+                    if (gsplat) {
+                        // Force high quality settings
+                        gsplat.lodRangeMin = 0;
+                        gsplat.lodRangeMax = 8;
+                        gsplat.splatBudget = 6000000; // 6 million splats for desktop quality
+                    }
                 }
             });
         </script>
